@@ -1,4 +1,9 @@
-# Edinburgh Hogmanay hotel price monitor (4★+)
+# Edinburgh Hogmanay monitor: 4★+ hotels and Underworld tickets
+
+Two monitors share one database:
+
+- **`monitor.py`**: hotel prices. See [REPORT.md](REPORT.md).
+- **`tickets.py`**: *Hogmanay in the Gardens with Underworld* tickets from the official box office. See [TICKETS.md](TICKETS.md).
 
 Tracks live prices at 47 four- and five-star Edinburgh hotels for New Year's Eve 2026.
 Each run stores a snapshot and rewrites **[REPORT.md](REPORT.md)** with the current prices.
@@ -41,10 +46,35 @@ python3 monitor.py --report-only  # rebuild the report from stored data
 
 Python 3.9+ and the standard library only.
 
+## Underworld tickets (`tickets.py`)
+
+Reads the official box office feed for edwinterfest.com, the Edinburgh's Hogmanay ticket site. This is the same
+public data the booking page loads. Regular prices are set in `tickets.json`. They include fees and the £1 donation.
+
+| Tier | Regular price | Status at first check (20 Nov) |
+|---|---:|---|
+| Gardens | £79 | On sale, 25% left |
+| Enclosure | £89 | Sold out |
+| Premium | £180 | Sold out |
+
+| Alert | Fires when |
+|---|---|
+| `BELOW REGULAR PRICE` | A tier is on sale for less than its regular price |
+| `BACK ON SALE` | A sold-out tier becomes available again, for example from returns or a new release |
+| `SELLING OUT` | A tier on sale drops to `low_stock_percent` (default 10%) or less |
+| `SOLD OUT` / `PRICE CHANGE` | Status or price changes |
+
+Resale sites (Twickets, StubHub, viagogo) are **not** checked.
+
+```bash
+python3 tickets.py                # check and write TICKETS.md
+python3 tickets.py --report-only
+```
+
 ## Scheduled runs
 
-`.github/workflows/price-monitor.yml` runs twice a day (06:17 and 18:17 UTC). It commits the updated
-database and report, and shows alerts as warnings on the run. You can also start it from the Actions tab
+`.github/workflows/price-monitor.yml` checks tickets every 2 hours and hotel prices at 06:17 and 18:17 UTC.
+It commits the updated database and reports, and shows alerts as warnings on the run. You can also start it from the Actions tab
 with "Run workflow". GitHub only runs scheduled workflows from the repository's **default branch**.
 
 Useful queries:

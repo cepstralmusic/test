@@ -1,0 +1,14 @@
+{
+  "event": "Hogmanay in the Gardens with Underworld",
+  "slug": "hogmanay-in-the-gardens-with-underworld",
+  "api_base": "https://edwinterfest.com/api",
+  "booking_url": "https://edwinterfest.com/whats-on/hogmanay-in-the-gardens-with-underworld/performances",
+  "tiers": {
+    "Gardens": 79.0,
+    "Enclosure": 89.0,
+    "Premium": 180.0
+  },
+  "alerts": {
+    "low_stock_percent": 10
+  }
+}

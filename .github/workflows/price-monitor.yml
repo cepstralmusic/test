@@ -1,9 +1,14 @@
-name: Edinburgh NYE hotel price monitor
+name: Edinburgh Hogmanay monitor (hotels + Underworld tickets)
 
 on:
   schedule:
-    - cron: "17 6,18 * * *"   # twice daily, 06:17 and 18:17 UTC
+    - cron: "17 */2 * * *"   # every 2 hours; hotel prices only at the 06:17 and 18:17 UTC runs
   workflow_dispatch:
+    inputs:
+      hotels:
+        description: "Also check hotel prices on this run"
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -13,7 +18,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  check-prices:
+  check:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -21,18 +26,27 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Fetch prices and build report
-        run: python3 monitor.py | tee run.log
+      - name: Underworld ticket check
+        continue-on-error: true
+        run: python3 tickets.py | tee -a run.log
+      - name: Hotel price check
+        if: github.event_name != 'workflow_dispatch' || inputs.hotels
+        continue-on-error: true
+        run: |
+          hour=$(date -u +%H)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$hour" = "06" ] || [ "$hour" = "18" ]; then
+            python3 monitor.py | tee -a run.log
+          else
+            echo "Skipping hotel prices this run (only at 06 and 18 UTC)."
+          fi
       - name: Surface alerts in the job summary
         run: |
-          cat REPORT.md >> "$GITHUB_STEP_SUMMARY"
-          if grep -q '^ALERT:' run.log; then
-            grep '^ALERT:' run.log | sed 's/^/::warning::/'
-          fi
+          { echo "## Alerts"; grep '^ALERT:' run.log || echo "None"; echo; cat TICKETS.md; echo; cat REPORT.md; } >> "$GITHUB_STEP_SUMMARY"
+          grep '^ALERT:' run.log | sed 's/^/::warning::/' || true
       - name: Commit updated data
         run: |
           git config user.name "price-monitor-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/prices.db REPORT.md
-          git diff --cached --quiet || git commit -m "Price check $(date -u '+%Y-%m-%d %H:%M UTC')"
-          git push
+          git add data/prices.db REPORT.md TICKETS.md
+          git diff --cached --quiet || git commit -m "Monitor check $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git pull --rebase -X theirs && git push
