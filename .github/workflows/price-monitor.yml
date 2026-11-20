@@ -1,0 +1,38 @@
+name: Edinburgh NYE hotel price monitor
+
+on:
+  schedule:
+    - cron: "17 6,18 * * *"   # twice daily, 06:17 and 18:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: price-monitor
+  cancel-in-progress: false
+
+jobs:
+  check-prices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch prices and build report
+        run: python3 monitor.py | tee run.log
+      - name: Surface alerts in the job summary
+        run: |
+          cat REPORT.md >> "$GITHUB_STEP_SUMMARY"
+          if grep -q '^ALERT:' run.log; then
+            grep '^ALERT:' run.log | sed 's/^/::warning::/'
+          fi
+      - name: Commit updated data
+        run: |
+          git config user.name "price-monitor-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/prices.db REPORT.md
+          git diff --cached --quiet || git commit -m "Price check $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push
