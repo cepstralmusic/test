@@ -1,6 +1,6 @@
 # Hogmanay in the Gardens with Underworld — tickets
 
-Last checked **2026-11-22 09:44 UTC** (compared with 2026-11-22 02:12 UTC).  
+Last checked **2026-11-22 17:36 UTC** (compared with 2026-11-22 09:44 UTC).  
 Source: official box office feed. Book at https://edwinterfest.com/whats-on/hogmanay-in-the-gardens-with-underworld/performances  
 Prices are per ticket and include booking fees and the £1 charity donation.
 
@@ -8,7 +8,7 @@ Prices are per ticket and include booking fees and the £1 charity donation.
 
 | Tier | Price now | Regular | Status | Left |
 |---|---:|---:|---|---:|
-| Gardens | £79.00 | £79.00 | **On sale** | 24% |
+| Gardens | £79.00 | £79.00 | **On sale** | 23% |
 | Enclosure | £89.00 | £89.00 | Sold out | 0% |
 | Premium | £180.00 | £180.00 | Sold out | 0% |
 
@@ -16,6 +16,9 @@ Prices are per ticket and include booking fees and the £1 charity donation.
 
 | Checked | Tier | Status | Left |
 |---|---|---|---:|
+| 2026-11-22 17:36 UTC | Enclosure | Sold out | 0% |
+| 2026-11-22 17:36 UTC | Gardens | On sale | 23% |
+| 2026-11-22 17:36 UTC | Premium | Sold out | 0% |
 | 2026-11-22 09:44 UTC | Enclosure | Sold out | 0% |
 | 2026-11-22 09:44 UTC | Gardens | On sale | 24% |
 | 2026-11-22 09:44 UTC | Premium | Sold out | 0% |
