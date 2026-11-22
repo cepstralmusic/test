@@ -2,7 +2,7 @@ name: Edinburgh Hogmanay monitor (hotels + Underworld tickets)
 
 on:
   schedule:
-    - cron: "17 */2 * * *"   # every 2 hours; hotel prices only at the 06:17 and 18:17 UTC runs
+    - cron: "17 7 * * *"   # once a day at 07:17 UTC (07:17 in Edinburgh in winter)
   workflow_dispatch:
     inputs:
       hotels:
@@ -32,13 +32,7 @@ jobs:
       - name: Hotel price check
         if: github.event_name != 'workflow_dispatch' || inputs.hotels
         continue-on-error: true
-        run: |
-          hour=$(date -u +%H)
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$hour" = "06" ] || [ "$hour" = "18" ]; then
-            python3 monitor.py | tee -a run.log
-          else
-            echo "Skipping hotel prices this run (only at 06 and 18 UTC)."
-          fi
+        run: python3 monitor.py | tee -a run.log
       - name: Surface alerts in the job summary
         run: |
           { echo "## Alerts"; grep '^ALERT:' run.log || echo "None"; echo; cat TICKETS.md; echo; cat REPORT.md; } >> "$GITHUB_STEP_SUMMARY"

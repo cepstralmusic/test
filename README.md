@@ -73,7 +73,7 @@ python3 tickets.py --report-only
 
 ## Scheduled runs
 
-`.github/workflows/price-monitor.yml` checks tickets every 2 hours and hotel prices at 06:17 and 18:17 UTC.
+`.github/workflows/price-monitor.yml` checks tickets and hotel prices once a day at 07:17 UTC.
 It commits the updated database and reports, and shows alerts as warnings on the run. You can also start it from the Actions tab
 with "Run workflow". GitHub only runs scheduled workflows from the repository's **default branch**.
 
